@@ -6,6 +6,8 @@ from tkinter import font
 import urllib.request
 import urllib.parse
 import folium
+import smtplib
+from email.message import EmailMessage
 # 사용자정의 모듈
 import pharmacyCount
 
@@ -60,6 +62,8 @@ class Pharmacy:
             self.searchLatLabel()
             self.searchLonLabel()
             self.searchMapButton()
+            self.inputEmailLabel()
+            self.sendEmailButton()
 
       # 버튼 함수들
       def printAllButton(self):
@@ -104,10 +108,14 @@ class Pharmacy:
             self.renderStickGraphButton.place(x=42, y=280)
       def searchMapButton(self):
             self.tempFont = font.Font(self.window, size=12, weight='bold', family='Consolas')
-            self.searchMapButton = Button(self.window, font=self.tempFont, borderwidth=10, text="지도검색",
-                                                 command=self.setMap)
+            self.searchMapButton = Button(self.window, font=self.tempFont, borderwidth=10, text="지도검색", command=self.setMap)
             self.searchMapButton.pack()
             self.searchMapButton.place(x=175, y=360)
+      def sendEmailButton(self):
+            self.tempFont = font.Font(self.window, size=12, weight='bold', family='Consolas')
+            self.searchButton = Button(self.window, font=self.tempFont, borderwidth=10, text="전송", command=self.setEmail)
+            self.searchButton.pack()
+            self.searchButton.place(x=205, y=420)
 
       # 라벨 함수들
       def searchNameLabel(self):
@@ -136,6 +144,18 @@ class Pharmacy:
                                     borderwidth=12, relief='ridge')
             self.inputLabel.pack()
             self.inputLabel.place(x=90, y=360)
+      def inputEmailLabel(self):
+            self.tempFont = font.Font(self.window, size=15, weight='bold', family='Consolas')
+            self.mailEntry = StringVar()
+            self.contentEntry = StringVar()
+            self.inputEmailText = Entry(self.window, textvariable=self.mailEntry, font=self.tempFont, width=10,
+                                        borderwidth=12, relief='ridge')
+            self.inputEmailText.pack()
+            self.inputEmailText.place(x=5, y=420)
+            self.inputEmailText = Entry(self.window, textvariable=self.contentEntry, font=self.tempFont, width=3,
+                                        borderwidth=12, relief='ridge')
+            self.inputEmailText.pack()
+            self.inputEmailText.place(x=140, y=420)
 
       # 값을 지정하는 함수들
       def setXML(self):
@@ -181,6 +201,22 @@ class Pharmacy:
             map_osm = folium.Map(location=[self.latitude, self.longitude], zoom_start=13)
             folium.Marker([self.latitude, self.longitude], popup='Mt. Hood Meadows').add_to(map_osm)
             map_osm.save('map.html')
+      def setEmail(self):
+            smtp_gmail = smtplib.SMTP('smtp.gmail.com', 587)
+
+            smtp_gmail.ehlo()
+            smtp_gmail.starttls()
+            smtp_gmail.login('zoemfhs123@gmail.com', 'kjy341229!')
+            msg = EmailMessage()
+            # 제목 입력
+            msg['Subject'] = "약국정보"
+            # 내용 입력
+            msg.set_content(self.contentEntry.get())
+            # 보내는 사람
+            msg['From'] = 'zoemfhs123@gmail.com'
+            # 받는 사람
+            msg['To'] = self.mailEntry.get()
+            smtp_gmail.send_message(msg)
 
       # 출력함수
       def printAll(self):
