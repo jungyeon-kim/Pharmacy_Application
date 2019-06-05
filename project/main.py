@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import font
 import urllib.request
 import urllib.parse
+import folium
 # 사용자정의 모듈
 import pharmacyCount
 
@@ -15,9 +16,9 @@ class Pharmacy:
             self.window = Tk()
             self.window.geometry("800x500")
             self.window.title("전국약국정보")
-            self.background = PhotoImage(file="resource/background.png")
-            self.bgLabel = Label(image=self.background)
-            self.bgLabel.place(x=0, y=0)
+            #self.background = PhotoImage(file="resource/background.png")
+            #self.bgLabel = Label(image=self.background)
+            #self.bgLabel.place(x=0, y=0)
 
             self.initVariable()
             self.setXML()
@@ -40,6 +41,8 @@ class Pharmacy:
             self.page = 1
             self.name = ""
             self.area = ""
+            self.latitude = 0.0
+            self.longitude = 0.0
             self.onText = FALSE
             self.areaCount = pharmacyCount.PharmacyCount()
       def initInterface(self):
@@ -54,6 +57,9 @@ class Pharmacy:
             self.refreshButton()
             self.renderRoundGraphButton()
             self.renderStickGraphButton()
+            self.searchLatLabel()
+            self.searchLonLabel()
+            self.searchMapButton()
 
       # 버튼 함수들
       def printAllButton(self):
@@ -96,6 +102,12 @@ class Pharmacy:
             self.renderStickGraphButton = Button(self.window, font=self.tempFont, borderwidth=10, text="지역별 분포도(개수)", command=self.areaCount.renderStickGraph)
             self.renderStickGraphButton.pack()
             self.renderStickGraphButton.place(x=42, y=280)
+      def searchMapButton(self):
+            self.tempFont = font.Font(self.window, size=12, weight='bold', family='Consolas')
+            self.searchMapButton = Button(self.window, font=self.tempFont, borderwidth=10, text="지도검색",
+                                                 command=self.setMap)
+            self.searchMapButton.pack()
+            self.searchMapButton.place(x=175, y=360)
 
       # 라벨 함수들
       def searchNameLabel(self):
@@ -110,6 +122,20 @@ class Pharmacy:
             self.inputLabel = Entry(self.window, textvariable=self.areaEntry, font=self.tempFont, width=10, borderwidth=12, relief='ridge')
             self.inputLabel.pack()
             self.inputLabel.place(x=5, y=140)
+      def searchLatLabel(self):
+            self.tempFont = font.Font(self.window, size=15, weight="bold", family="Consolas")
+            self.latEntry = DoubleVar()
+            self.inputLabel = Entry(self.window, textvariable=self.latEntry, font=self.tempFont, width=5,
+                                    borderwidth=12, relief='ridge')
+            self.inputLabel.pack()
+            self.inputLabel.place(x=5, y=360)
+      def searchLonLabel(self):
+            self.tempFont = font.Font(self.window, size=15, weight="bold", family="Consolas")
+            self.lonEntry = DoubleVar()
+            self.inputLabel = Entry(self.window, textvariable=self.lonEntry, font=self.tempFont, width=5,
+                                    borderwidth=12, relief='ridge')
+            self.inputLabel.pack()
+            self.inputLabel.place(x=90, y=360)
 
       # 값을 지정하는 함수들
       def setXML(self):
@@ -149,6 +175,12 @@ class Pharmacy:
             self.area = self.areaEntry.get()
             self.setXML()
             self.printAll()
+      def setMap(self):
+            self.latitude = self.latEntry.get()
+            self.longitude = self.lonEntry.get()
+            map_osm = folium.Map(location=[self.latitude, self.longitude], zoom_start=13)
+            folium.Marker([self.latitude, self.longitude], popup='Mt. Hood Meadows').add_to(map_osm)
+            map_osm.save('map.html')
 
       # 출력함수
       def printAll(self):
@@ -181,6 +213,9 @@ class Pharmacy:
                   self.renderText.insert(INSERT, chr(10))
                   self.renderText.insert(INSERT, "일: ", INSERT, item.findtext("dutyTime7s"), INSERT, " ~ ", INSERT,
                                          item.findtext("dutyTime7c"))
+                  self.renderText.insert(INSERT, chr(10))
+                  self.renderText.insert(INSERT, "위도: ", INSERT, item.findtext("wgs84Lat"), INSERT, chr(10), INSERT, "경도: ", INSERT,
+                                         item.findtext("wgs84Lon"))
                   self.renderText.insert(INSERT, chr(10), INSERT, chr(10))
             self.renderText.configure(state="disabled")
 

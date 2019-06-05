@@ -1,0 +1,3 @@
+cd °æ·Î
+python main.py install
+pyinstaller --onefile -w main.py
