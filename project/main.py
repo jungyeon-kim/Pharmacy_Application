@@ -18,9 +18,9 @@ class Pharmacy:
             self.window = Tk()
             self.window.geometry("800x500")
             self.window.title("전국약국정보")
-            #self.background = PhotoImage(file="resource/background.png")
-            #self.bgLabel = Label(image=self.background)
-            #self.bgLabel.place(x=0, y=0)
+            self.background = PhotoImage(file="resource/background.png")
+            self.bgLabel = Label(image=self.background)
+            self.bgLabel.place(x=0, y=0)
 
             self.initVariable()
             self.setXML()
@@ -80,7 +80,7 @@ class Pharmacy:
             self.tempFont = font.Font(self.window, size=12, weight='bold', family='Consolas')
             self.previousButton = Button(self.window, font=self.tempFont, borderwidth=10, text="<", command=self.setPrevious)
             self.previousButton.pack()
-            self.previousButton.place(x=265, y=445)
+            self.previousButton.place(x=268, y=445)
       def searchNameButton(self):
             self.tempFont = font.Font(self.window, size=12, weight='bold', family='Consolas')
             self.searchNameButton = Button(self.window, font=self.tempFont, borderwidth=10, text="이름 검색", command=self.setName)
